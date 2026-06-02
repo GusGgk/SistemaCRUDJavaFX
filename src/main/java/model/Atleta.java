@@ -3,6 +3,8 @@ package model;
 import java.time.LocalDate;
 
 public class Atleta extends User{
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String nickname;
     private LocalDate dataNascimento;

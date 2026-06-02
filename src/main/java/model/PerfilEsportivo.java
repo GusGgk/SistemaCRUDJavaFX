@@ -1,6 +1,8 @@
 package model;
+import java.io.Serializable;
 
-public class PerfilEsportivo {
+public class PerfilEsportivo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private int id;
     private Atleta atleta;
@@ -42,11 +44,19 @@ public class PerfilEsportivo {
         return id;
     }
 
+    public String getNomeAtleta(){
+        return atleta.getNome();
+    }
+
     public int getIdAtleta() {
         return atleta.getId();
     }
 
-    public void setIdAtleta(Atleta atleta) {
+    public Atleta getAtleta() {
+        return atleta;
+    }
+
+    public void setAtleta(Atleta atleta) {
         this.atleta = atleta;
     }
 

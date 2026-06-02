@@ -5,7 +5,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -15,15 +14,23 @@ import javafx.geometry.Insets;
 import model.Atleta;
 import repository.AtletaRepository;
 
-
+import util.AlertaUtil;
 import java.time.LocalDate;
 
-import static javafx.application.Application.launch;
 
 public class TelaAtleta extends Application {
+
+    private AtletaRepository atletaRepository;
+    public TelaAtleta(AtletaRepository atletaRepository){
+        this.atletaRepository = atletaRepository;
+    }
+
+    public TelaAtleta(){
+        this.atletaRepository = new AtletaRepository();
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
-        AtletaRepository atletaRepository = new AtletaRepository();
         TableView<Atleta> tabelaAtletas = new TableView<>();
 
         stage.setTitle("DRAFT - TELA ATLETA");
@@ -74,34 +81,17 @@ public class TelaAtleta extends Application {
                 boolean sucesso = atletaRepository.adicionarAtleta(atleta);
 
                 if (sucesso) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Sucesso!");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Atleta cadastrado com sucesso!");
-                    alert.showAndWait();
+                    AlertaUtil.mostrarSucesso("Atleta cadastrado com sucesso!");
                     tabelaAtletas.getItems().setAll(atletaRepository.listarAtletas());
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erro!");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Erro ao cadastrar atleta! Tente novamente");
-                    alert.showAndWait();
+                    AlertaUtil.mostrarErro("Erro ao cadastrar o atleta, tente novamente");
+
                 }
             } catch (NumberFormatException e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro!");
-                alert.setHeaderText(null);
-                alert.setContentText("O ID deve ser um número");
-                alert.showAndWait();
+                AlertaUtil.erroNumeroInvalido();
             } catch (Exception e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro!");
-                alert.setHeaderText(null);
-                alert.setContentText("Todos os campos devem ser preenchidos");
-                alert.showAndWait();
+                AlertaUtil.mostrarErro(e.getMessage());
             }
-
-
         });
 
 
@@ -120,7 +110,7 @@ public class TelaAtleta extends Application {
                 LocalDate dataNascimento = campoDataNascimento.getValue();
 
                 if (nome.isEmpty()||email.isEmpty()||senha.isEmpty()||nacionalidade.isEmpty()||nickname.isEmpty()||endereco.isEmpty() || dataNascimento == null){
-                    throw new Exception("Campos obrigatórios vazios");
+                    throw new Exception("Preencha todos os campos!");
                 }
 
                 Atleta atleta = new Atleta(nome, email, senha, id, nickname, dataNascimento, nacionalidade, endereco);
@@ -133,36 +123,18 @@ public class TelaAtleta extends Application {
                 boolean sucesso = atletaRepository.atualizarAtleta(atleta);
 
                 if (sucesso) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Sucesso!");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Atleta editado com sucesso!");
-                    alert.showAndWait();
+                    AlertaUtil.mostrarSucesso("Atualização de Atleta com sucesso!");
                     tabelaAtletas.getItems().setAll(atletaRepository.listarAtletas());
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erro!");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Erro ao editar atleta! Tente novamente");
-                    alert.showAndWait();
+                    AlertaUtil.mostrarErro("Erro ao atualizar atleta, verifique se o atleta já foi cadastrado!");
                 }
             } catch (NumberFormatException e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro!");
-                alert.setHeaderText(null);
-                alert.setContentText("O ID deve ser um número");
-                alert.showAndWait();
+                AlertaUtil.mostrarErro("O campo ID deve ser preenchido com um número");
             } catch (Exception e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro!");
-                alert.setHeaderText(null);
-                alert.setContentText("Precisa selecionar alguma linha da tabela!");
-                alert.showAndWait();
+               AlertaUtil.mostrarAviso(e.getMessage());
             }
 
         });
-
-
 
         Button btnDeletar = new Button("Deletar Atleta");
         btnDeletar.setOnAction(evento ->{
@@ -170,13 +142,17 @@ public class TelaAtleta extends Application {
 
             if (atletaSelecionado != null){
                 atletaRepository.deletarAtleta(atletaSelecionado.getId());
+                AlertaUtil.mostrarSucesso("Atleta deletado com sucesso!");
                 tabelaAtletas.getItems().setAll(atletaRepository.listarAtletas());
+            } else{
+                AlertaUtil.mostrarAviso("Selecione um atleta para deletar.");
             }
         });
 
         Button btnLimpar = new Button("Limpar Campos");
         btnLimpar.setOnAction(evento -> {
             campoId.setEditable(true);
+            campoId.clear();
             campoNome.clear();
             campoEmail.clear();
             campoEndereco.clear();
@@ -206,6 +182,7 @@ public class TelaAtleta extends Application {
         tabelaAtletas.getSelectionModel().selectedItemProperty().addListener(
                 (obs, atletaAntigo, atletaSelecionado) -> {
                     if (atletaSelecionado != null) {
+                        campoId.setEditable(false);
                         campoId.setText(String.valueOf(atletaSelecionado.getId()));
                         campoNome.setText(atletaSelecionado.getNome());
                         campoEmail.setText(atletaSelecionado.getEmail());
@@ -263,11 +240,5 @@ public class TelaAtleta extends Application {
         stage.setScene(scene);
         stage.show();
 
-    }
-
-
-
-    public static void main(String[] args){
-        launch();
     }
 }
