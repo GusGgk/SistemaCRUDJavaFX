@@ -70,9 +70,9 @@ public class VagaRepository {
         try {
             File pasta = new File("data");
             if (!pasta.exists()) {
-                pasta.mkdir(); // Cria a pasta data caso ela não exista
+                pasta.mkdir(); //cria a pasta data caso ela não exista
             }
-            // Abre o fluxo de saída para gravação de objetos
+            //abre o fluxo de saída para gravação de objetos
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(caminhoArquivo));
             oos.writeObject(vagas);
             oos.close();
@@ -81,15 +81,15 @@ public class VagaRepository {
         }
     }
 
-    // Lê a lista do arquivo binário e reconstrói o ArrayList na memória
+    //lê a lista do arquivo binário e reconstrói o ArrayList na memória
     @SuppressWarnings("unchecked")
     private void carregarArquivo() {
         File arquivo = new File(caminhoArquivo);
         if (!arquivo.exists()) {
-            return; // Se o arquivo não existe (primeira execução), não faz nada
+            return; //se o arquivo não exist não faz nada
         }
         try {
-            // Abre o fluxo de entrada para leitura de objetos
+            //abre o fluxo de entrada para leitura de objetos
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(caminhoArquivo));
             vagas = (ArrayList<Vaga>) ois.readObject();
             ois.close();
