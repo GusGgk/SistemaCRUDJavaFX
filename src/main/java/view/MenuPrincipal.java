@@ -14,6 +14,8 @@ import repository.AtletaRepository;
 import repository.PerfilAtletaRepository;
 import repository.InstituicaoRepository;
 import repository.ResponsavelInstituicaoRepository;
+import repository.VagaRepository;
+import repository.RequisitoVagaRepository;
 
 public class MenuPrincipal extends Application {
 
@@ -29,6 +31,9 @@ public class MenuPrincipal extends Application {
         ResponsavelInstituicaoRepository responsavelRepository =
                 new ResponsavelInstituicaoRepository();
 
+        VagaRepository vagaRepository = new VagaRepository();
+        RequisitoVagaRepository requisitoRepository = new RequisitoVagaRepository();
+
         Label titulo = new Label("DRAFT - Menu Principal");
         titulo.setFont(new Font("Arial", 24));
 
@@ -43,6 +48,12 @@ public class MenuPrincipal extends Application {
 
         Button btnResponsaveis =
                 new Button("Gerenciar Responsáveis");
+
+        Button btnVagas =
+                new Button("Gerenciar Vagas");
+
+        Button btnRequisitos =
+                new Button("Gerenciar Requisitos");
 
         btnAtletas.setOnAction(evento -> {
             TelaAtleta telaAtleta =
@@ -95,6 +106,31 @@ public class MenuPrincipal extends Application {
             }
         });
 
+        btnVagas.setOnAction(evento -> {
+            TelaVaga telaVaga =
+                    new TelaVaga(vagaRepository);
+
+            try {
+                telaVaga.start(new Stage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        btnRequisitos.setOnAction(evento -> {
+            TelaRequisitoVaga telaReq =
+                    new TelaRequisitoVaga(
+                            vagaRepository,
+                            requisitoRepository
+                    );
+
+            try {
+                telaReq.start(new Stage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         VBox raiz = new VBox(20);
 
         raiz.setPadding(new Insets(30));
@@ -105,10 +141,12 @@ public class MenuPrincipal extends Application {
                 btnAtletas,
                 btnPerfis,
                 btnInstituicoes,
-                btnResponsaveis
+                btnResponsaveis,
+                btnVagas,
+                btnRequisitos
         );
 
-        Scene scene = new Scene(raiz, 500, 400);
+        Scene scene = new Scene(raiz, 500, 500);
 
         stage.setTitle("DRAFT");
         stage.setScene(scene);
