@@ -16,6 +16,8 @@ import repository.InstituicaoRepository;
 import repository.ResponsavelInstituicaoRepository;
 import repository.VagaRepository;
 import repository.RequisitoVagaRepository;
+import repository.AgenteRepository;
+import repository.VinculoEsportivoRepository;
 
 public class MenuPrincipal extends Application {
 
@@ -33,6 +35,9 @@ public class MenuPrincipal extends Application {
 
         VagaRepository vagaRepository = new VagaRepository();
         RequisitoVagaRepository requisitoRepository = new RequisitoVagaRepository();
+        
+        AgenteRepository agenteRepository = new AgenteRepository();
+        VinculoEsportivoRepository vinculoEsportivoRepository = new VinculoEsportivoRepository();
 
         Label titulo = new Label("DRAFT - Menu Principal");
         titulo.setFont(new Font("Arial", 24));
@@ -54,6 +59,12 @@ public class MenuPrincipal extends Application {
 
         Button btnRequisitos =
                 new Button("Gerenciar Requisitos");
+
+        Button btnAgentes =
+                new Button("Gerenciar Agentes");
+
+        Button btnVinculos =
+                new Button("Gerenciar Vínculos Esportivos");
 
         btnAtletas.setOnAction(evento -> {
             TelaAtleta telaAtleta =
@@ -131,7 +142,33 @@ public class MenuPrincipal extends Application {
             }
         });
 
-        VBox raiz = new VBox(20);
+        btnAgentes.setOnAction(evento -> {
+            TelaAgente telaAgente =
+                    new TelaAgente(agenteRepository);
+
+            try {
+                telaAgente.start(new Stage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        btnVinculos.setOnAction(evento -> {
+            TelaVinculoEsportivo telaVinculo =
+                    new TelaVinculoEsportivo(
+                            atletaRepository,
+                            instituicaoRepository,
+                            vinculoEsportivoRepository
+                    );
+
+            try {
+                telaVinculo.start(new Stage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        VBox raiz = new VBox(15);
 
         raiz.setPadding(new Insets(30));
         raiz.setAlignment(Pos.CENTER);
@@ -143,10 +180,12 @@ public class MenuPrincipal extends Application {
                 btnInstituicoes,
                 btnResponsaveis,
                 btnVagas,
-                btnRequisitos
+                btnRequisitos,
+                btnAgentes,
+                btnVinculos
         );
 
-        Scene scene = new Scene(raiz, 500, 500);
+        Scene scene = new Scene(raiz, 500, 600);
 
         stage.setTitle("DRAFT");
         stage.setScene(scene);
