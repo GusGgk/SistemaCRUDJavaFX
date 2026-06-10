@@ -71,4 +71,9 @@ public class Atleta extends User{
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
+
+    @Override
+    public String toString() {
+        return getNome();
+    }
 }
