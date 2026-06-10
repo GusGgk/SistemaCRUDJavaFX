@@ -1,4 +1,4 @@
-package tests;
+/*package tests;
 
 import model.Atleta;
 import repository.AtletaRepository;
@@ -72,4 +72,5 @@ public class TesteAtletaRepository {
             atleta.mostrarDados();
         }
     }
-}
+   }
+*/

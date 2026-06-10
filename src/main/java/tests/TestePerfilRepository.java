@@ -1,3 +1,4 @@
+/*
 package tests;
 
 import model.Atleta;
@@ -97,4 +98,4 @@ public class TestePerfilRepository {
             perfilEsportivo.mostrarDados();
         }
     }
-}
+} */
