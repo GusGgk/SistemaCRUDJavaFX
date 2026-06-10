@@ -12,23 +12,33 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
+import model.Atleta;
 import model.ResponsavelInstituicao;
+
+import repository.AtletaRepository;
 import repository.ResponsavelInstituicaoRepository;
+
 import util.AlertaUtil;
 
 public class TelaResponsavelInstituicao extends Application {
 
     private ResponsavelInstituicaoRepository responsavelRepository;
+    private AtletaRepository atletaRepository;
 
     public TelaResponsavelInstituicao(
             ResponsavelInstituicaoRepository responsavelRepository) {
 
         this.responsavelRepository = responsavelRepository;
+        this.atletaRepository = new AtletaRepository();
     }
 
     public TelaResponsavelInstituicao() {
+
         this.responsavelRepository =
                 new ResponsavelInstituicaoRepository();
+
+        this.atletaRepository =
+                new AtletaRepository();
     }
 
     @Override
@@ -47,17 +57,24 @@ public class TelaResponsavelInstituicao extends Application {
         TextField campoId = new TextField();
         campoId.setPromptText("ID");
 
+        ComboBox<Atleta> campoAtleta =
+                new ComboBox<>();
+
+        campoAtleta.getItems().addAll(
+                atletaRepository.listarAtletas()
+        );
+
         TextField campoNome = new TextField();
-        campoNome.setPromptText("Nome");
+        campoNome.setPromptText("Nome do Responsável");
 
-        TextField campoCargo = new TextField();
-        campoCargo.setPromptText("Cargo");
-
-        TextField campoEmail = new TextField();
-        campoEmail.setPromptText("Email");
+        TextField campoParentesco = new TextField();
+        campoParentesco.setPromptText("Parentesco");
 
         TextField campoTelefone = new TextField();
         campoTelefone.setPromptText("Telefone");
+
+        TextField campoEmail = new TextField();
+        campoEmail.setPromptText("Email");
 
         Button btnCadastrar =
                 new Button("Cadastrar");
@@ -71,22 +88,26 @@ public class TelaResponsavelInstituicao extends Application {
                                 campoId.getText()
                         );
 
+                Atleta atleta =
+                        campoAtleta.getValue();
+
                 String nome =
                         campoNome.getText();
 
-                String cargo =
-                        campoCargo.getText();
-
-                String email =
-                        campoEmail.getText();
+                String parentesco =
+                        campoParentesco.getText();
 
                 String telefone =
                         campoTelefone.getText();
 
-                if(nome.isEmpty()
-                        || cargo.isEmpty()
-                        || email.isEmpty()
-                        || telefone.isEmpty()) {
+                String email =
+                        campoEmail.getText();
+
+                if(atleta == null
+                        || nome.isEmpty()
+                        || parentesco.isEmpty()
+                        || telefone.isEmpty()
+                        || email.isEmpty()) {
 
                     throw new Exception(
                             "Preencha todos os campos"
@@ -96,10 +117,11 @@ public class TelaResponsavelInstituicao extends Application {
                 ResponsavelInstituicao responsavel =
                         new ResponsavelInstituicao(
                                 id,
+                                atleta,
                                 nome,
-                                cargo,
-                                email,
-                                telefone
+                                parentesco,
+                                telefone,
+                                email
                         );
 
                 boolean sucesso =
@@ -126,10 +148,6 @@ public class TelaResponsavelInstituicao extends Application {
                     );
                 }
 
-            } catch(NumberFormatException e) {
-
-                AlertaUtil.erroNumeroInvalido();
-
             } catch(Exception e) {
 
                 AlertaUtil.mostrarErro(
@@ -153,10 +171,11 @@ public class TelaResponsavelInstituicao extends Application {
                 ResponsavelInstituicao responsavel =
                         new ResponsavelInstituicao(
                                 id,
+                                campoAtleta.getValue(),
                                 campoNome.getText(),
-                                campoCargo.getText(),
-                                campoEmail.getText(),
-                                campoTelefone.getText()
+                                campoParentesco.getText(),
+                                campoTelefone.getText(),
+                                campoEmail.getText()
                         );
 
                 boolean sucesso =
@@ -207,7 +226,7 @@ public class TelaResponsavelInstituicao extends Application {
                 );
 
                 AlertaUtil.mostrarSucesso(
-                        "Removido com sucesso!"
+                        "Responsável removido!"
                 );
             }
         });
@@ -217,16 +236,15 @@ public class TelaResponsavelInstituicao extends Application {
 
         btnLimpar.setOnAction(evento -> {
 
-            campoId.setEditable(true);
-
             campoId.clear();
             campoNome.clear();
-            campoCargo.clear();
-            campoEmail.clear();
+            campoParentesco.clear();
             campoTelefone.clear();
+            campoEmail.clear();
 
-            tabela.getSelectionModel()
-                    .clearSelection();
+            campoAtleta.setValue(null);
+
+            campoId.setEditable(true);
         });
 
         TableColumn<ResponsavelInstituicao,Integer>
@@ -238,43 +256,39 @@ public class TelaResponsavelInstituicao extends Application {
         );
 
         TableColumn<ResponsavelInstituicao,String>
+                colunaAtleta =
+                new TableColumn<>("Atleta");
+
+        colunaAtleta.setCellValueFactory(
+                cellData ->
+                        new javafx.beans.property.SimpleStringProperty(
+                                cellData.getValue()
+                                        .getAtleta()
+                                        .getNome()
+                        )
+        );
+
+        TableColumn<ResponsavelInstituicao,String>
                 colunaNome =
-                new TableColumn<>("Nome");
+                new TableColumn<>("Responsável");
 
         colunaNome.setCellValueFactory(
                 new PropertyValueFactory<>("nome")
         );
 
         TableColumn<ResponsavelInstituicao,String>
-                colunaCargo =
-                new TableColumn<>("Cargo");
+                colunaParentesco =
+                new TableColumn<>("Parentesco");
 
-        colunaCargo.setCellValueFactory(
-                new PropertyValueFactory<>("cargo")
-        );
-
-        TableColumn<ResponsavelInstituicao,String>
-                colunaEmail =
-                new TableColumn<>("Email");
-
-        colunaEmail.setCellValueFactory(
-                new PropertyValueFactory<>("email")
-        );
-
-        TableColumn<ResponsavelInstituicao,String>
-                colunaTelefone =
-                new TableColumn<>("Telefone");
-
-        colunaTelefone.setCellValueFactory(
-                new PropertyValueFactory<>("telefone")
+        colunaParentesco.setCellValueFactory(
+                new PropertyValueFactory<>("parentesco")
         );
 
         tabela.getColumns().addAll(
                 colunaId,
+                colunaAtleta,
                 colunaNome,
-                colunaCargo,
-                colunaEmail,
-                colunaTelefone
+                colunaParentesco
         );
 
         tabela.getItems().setAll(
@@ -297,27 +311,30 @@ public class TelaResponsavelInstituicao extends Application {
                                         )
                                 );
 
+                                campoAtleta.setValue(
+                                        selecionado.getAtleta()
+                                );
+
                                 campoNome.setText(
                                         selecionado.getNome()
                                 );
 
-                                campoCargo.setText(
-                                        selecionado.getCargo()
-                                );
-
-                                campoEmail.setText(
-                                        selecionado.getEmail()
+                                campoParentesco.setText(
+                                        selecionado.getParentesco()
                                 );
 
                                 campoTelefone.setText(
                                         selecionado.getTelefone()
                                 );
+
+                                campoEmail.setText(
+                                        selecionado.getEmail()
+                                );
                             }
                         }
                 );
 
-        GridPane formulario =
-                new GridPane();
+        GridPane formulario = new GridPane();
 
         formulario.setHgap(10);
         formulario.setVgap(10);
@@ -326,17 +343,20 @@ public class TelaResponsavelInstituicao extends Application {
         formulario.add(new Label("ID:"),0,0);
         formulario.add(campoId,1,0);
 
-        formulario.add(new Label("Nome:"),0,1);
-        formulario.add(campoNome,1,1);
+        formulario.add(new Label("Atleta:"),0,1);
+        formulario.add(campoAtleta,1,1);
 
-        formulario.add(new Label("Cargo:"),0,2);
-        formulario.add(campoCargo,1,2);
+        formulario.add(new Label("Nome:"),0,2);
+        formulario.add(campoNome,1,2);
 
-        formulario.add(new Label("Email:"),0,3);
-        formulario.add(campoEmail,1,3);
+        formulario.add(new Label("Parentesco:"),0,3);
+        formulario.add(campoParentesco,1,3);
 
         formulario.add(new Label("Telefone:"),0,4);
         formulario.add(campoTelefone,1,4);
+
+        formulario.add(new Label("Email:"),0,5);
+        formulario.add(campoEmail,1,5);
 
         HBox botoes = new HBox(10);
 
@@ -362,7 +382,7 @@ public class TelaResponsavelInstituicao extends Application {
         );
 
         Scene scene =
-                new Scene(raiz,700,700);
+                new Scene(raiz, 800, 700);
 
         stage.setScene(scene);
         stage.show();
