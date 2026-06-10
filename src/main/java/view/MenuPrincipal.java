@@ -11,6 +11,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import repository.AtletaRepository;
+import repository.CandidaturaRepository;
 import repository.PerfilAtletaRepository;
 import repository.InstituicaoRepository;
 import repository.ResponsavelInstituicaoRepository;
@@ -40,6 +41,8 @@ public class MenuPrincipal extends Application {
 
         VinculoEsportivoRepository vinculoEsportivoRepository = new VinculoEsportivoRepository();
 
+        CandidaturaRepository candidaturaRepository = new CandidaturaRepository();
+
         Label titulo = new Label("DRAFT - Menu Principal");
         titulo.setFont(new Font("Arial", 24));
 
@@ -66,6 +69,9 @@ public class MenuPrincipal extends Application {
 
         Button btnVinculos =
                 new Button("Gerenciar Vínculos Esportivos");
+
+        Button btnCandidaturas =
+                new Button("Gerenciar Candidaturas");
 
         btnAtletas.setOnAction(evento -> {
             TelaAtleta telaAtleta =
@@ -169,6 +175,21 @@ public class MenuPrincipal extends Application {
             }
         });
 
+        btnCandidaturas.setOnAction(evento -> {
+            TelaCandidatura telaCandidatura =
+                    new TelaCandidatura(
+                            candidaturaRepository,
+                            atletaRepository,
+                            vagaRepository
+                    );
+
+            try {
+                telaCandidatura.start(new Stage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         VBox raiz = new VBox(15);
 
         raiz.setPadding(new Insets(30));
@@ -183,7 +204,8 @@ public class MenuPrincipal extends Application {
                 btnVagas,
                 btnRequisitos,
                 btnAgentes,
-                btnVinculos
+                btnVinculos,
+                btnCandidaturas
         );
 
         Scene scene = new Scene(raiz, 500, 600);

@@ -2,7 +2,7 @@ package model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Candidatura {
+public class Candidatura implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int id;
@@ -57,5 +57,19 @@ public class Candidatura {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getNomeAtleta() {
+        if (atleta == null) {
+            return "";
+        }
+        return atleta.getNome();
+    }
+
+    public String getTituloVaga() {
+        if (vaga == null) {
+            return "";
+        }
+        return vaga.getTitulo();
     }
 }
