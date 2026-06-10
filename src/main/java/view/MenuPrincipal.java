@@ -25,18 +25,19 @@ public class MenuPrincipal extends Application {
     public void start(Stage stage) {
 
         AtletaRepository atletaRepository = new AtletaRepository();
+
         PerfilAtletaRepository perfilRepository = new PerfilAtletaRepository();
 
-        InstituicaoRepository instituicaoRepository =
-                new InstituicaoRepository();
+        InstituicaoRepository instituicaoRepository = new InstituicaoRepository();
 
-        ResponsavelInstituicaoRepository responsavelRepository =
-                new ResponsavelInstituicaoRepository();
+        ResponsavelInstituicaoRepository responsavelRepository = new ResponsavelInstituicaoRepository();
 
         VagaRepository vagaRepository = new VagaRepository();
+
         RequisitoVagaRepository requisitoRepository = new RequisitoVagaRepository();
         
         AgenteRepository agenteRepository = new AgenteRepository();
+
         VinculoEsportivoRepository vinculoEsportivoRepository = new VinculoEsportivoRepository();
 
         Label titulo = new Label("DRAFT - Menu Principal");
