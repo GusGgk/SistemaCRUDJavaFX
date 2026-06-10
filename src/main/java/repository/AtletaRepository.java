@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class AtletaRepository {
-private ArrayList<Atleta> atletas = new ArrayList<>();
+    private ArrayList<Atleta> atletas = new ArrayList<>();
     private final String caminhoArquivo = "data/atletas.dat";
 
     public AtletaRepository(){
