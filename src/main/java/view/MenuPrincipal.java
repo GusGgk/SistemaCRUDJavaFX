@@ -19,6 +19,7 @@ import repository.VagaRepository;
 import repository.RequisitoVagaRepository;
 import repository.AgenteRepository;
 import repository.VinculoEsportivoRepository;
+import repository.HistoricoCandidaturaRepository;
 
 public class MenuPrincipal extends Application {
 
@@ -42,6 +43,9 @@ public class MenuPrincipal extends Application {
         VinculoEsportivoRepository vinculoEsportivoRepository = new VinculoEsportivoRepository();
 
         CandidaturaRepository candidaturaRepository = new CandidaturaRepository();
+
+        HistoricoCandidaturaRepository historicoCandidaturaRepository =
+                new HistoricoCandidaturaRepository();
 
         Label titulo = new Label("DRAFT - Menu Principal");
         titulo.setFont(new Font("Arial", 24));
@@ -72,6 +76,9 @@ public class MenuPrincipal extends Application {
 
         Button btnCandidaturas =
                 new Button("Gerenciar Candidaturas");
+
+        Button btnHistoricosCandidaturas =
+                new Button("Gerenciar Historicos de Candidaturas");
 
         btnAtletas.setOnAction(evento -> {
             TelaAtleta telaAtleta =
@@ -190,6 +197,20 @@ public class MenuPrincipal extends Application {
             }
         });
 
+        btnHistoricosCandidaturas.setOnAction(evento -> {
+            TelaHistoricoCandidatura telaHistorico =
+                    new TelaHistoricoCandidatura(
+                            historicoCandidaturaRepository,
+                            candidaturaRepository
+                    );
+
+            try {
+                telaHistorico.start(new Stage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         VBox raiz = new VBox(15);
 
         raiz.setPadding(new Insets(30));
@@ -205,7 +226,8 @@ public class MenuPrincipal extends Application {
                 btnRequisitos,
                 btnAgentes,
                 btnVinculos,
-                btnCandidaturas
+                btnCandidaturas,
+                btnHistoricosCandidaturas
         );
 
         Scene scene = new Scene(raiz, 500, 600);
