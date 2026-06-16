@@ -9,11 +9,11 @@ public class Vaga implements Serializable {
     private String titulo;
     private String esporte;
     private String posicao;
-    private String instituicao; // ALTERAR DEPOIS Q INSTITUIÇÃO ESTIVER FEITO!!
+    private Instituicao instituicao;
     private String status; 
 
     // Construtor
-    public Vaga(int id, String titulo, String esporte, String posicao, String instituicao, String status) {
+    public Vaga(int id, String titulo, String esporte, String posicao, Instituicao instituicao, String status) {
         this.id = id;
         this.titulo = titulo;
         this.esporte = esporte;
@@ -55,12 +55,16 @@ public class Vaga implements Serializable {
         this.posicao = posicao;
     }
 
-    public String getInstituicao() {
+    public Instituicao getInstituicao() {
         return instituicao;
     }
 
-    public void setInstituicao(String instituicao) {
+    public void setInstituicao(Instituicao instituicao) {
         this.instituicao = instituicao;
+    }
+
+    public String getNomeInstituicao() {
+        return instituicao != null ? instituicao.getNome() : "";
     }
 
     public String getStatus() {
@@ -77,7 +81,7 @@ public class Vaga implements Serializable {
         System.out.println("Título: " + this.titulo);
         System.out.println("Esporte: " + this.esporte);
         System.out.println("Posição: " + this.posicao);
-        System.out.println("Instituição: " + this.instituicao);
+        System.out.println("Instituição: " + (this.instituicao != null ? this.instituicao.getNome() : "Nenhuma"));
         System.out.println("Status: " + this.status);
         System.out.println("----------------");
     }

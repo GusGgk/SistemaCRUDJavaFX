@@ -133,7 +133,7 @@ public class MenuPrincipal extends Application {
 
         btnVagas.setOnAction(evento -> {
             TelaVaga telaVaga =
-                    new TelaVaga(vagaRepository);
+                    new TelaVaga(vagaRepository, instituicaoRepository);
 
             try {
                 telaVaga.start(new Stage());

@@ -12,20 +12,25 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Vaga;
+import model.Instituicao;
 import repository.VagaRepository;
+import repository.InstituicaoRepository;
 import util.AlertaUtil;
 
 public class TelaVaga extends Application {
 
     private VagaRepository vagaRepository;
+    private InstituicaoRepository instituicaoRepository;
 
     //construtor recebendo o repositório instanciado
-    public TelaVaga(VagaRepository vagaRepository) {
+    public TelaVaga(VagaRepository vagaRepository, InstituicaoRepository instituicaoRepository) {
         this.vagaRepository = vagaRepository;
+        this.instituicaoRepository = instituicaoRepository;
     }
 
     public TelaVaga() {
         this.vagaRepository = new VagaRepository();
+        this.instituicaoRepository = new InstituicaoRepository();
     }
 
     @Override
@@ -51,8 +56,31 @@ public class TelaVaga extends Application {
         TextField campoPosicao = new TextField();
         campoPosicao.setPromptText("Posição desejada");
 
-        TextField campoInstituicao = new TextField();
-        campoInstituicao.setPromptText("Instituição ofertante");
+        ComboBox<Instituicao> comboInstituicao = new ComboBox<>();
+        comboInstituicao.getItems().addAll(instituicaoRepository.listarInstituicoes());
+        comboInstituicao.setPromptText("Selecione uma Instituição");
+        comboInstituicao.setCellFactory(param -> new ListCell<Instituicao>() {
+            @Override
+            protected void updateItem(Instituicao item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNome() + " (ID: " + item.getId() + ")");
+                }
+            }
+        });
+        comboInstituicao.setButtonCell(new ListCell<Instituicao>() {
+            @Override
+            protected void updateItem(Instituicao item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getNome() + " (ID: " + item.getId() + ")");
+                }
+            }
+        });
 
         ComboBox<String> comboStatus = new ComboBox<>();
         comboStatus.getItems().addAll("Aberta", "Encerrada");
@@ -68,11 +96,11 @@ public class TelaVaga extends Application {
                 String tit = campoTitulo.getText();
                 String esp = campoEsporte.getText();
                 String pos = campoPosicao.getText();
-                String inst = campoInstituicao.getText();
+                Instituicao inst = comboInstituicao.getValue();
                 String status = comboStatus.getValue();
 
                 //validação de preenchimento obrigatório
-                if (tit.isEmpty() || esp.isEmpty() || pos.isEmpty() || inst.isEmpty()) {
+                if (tit.isEmpty() || esp.isEmpty() || pos.isEmpty() || inst == null) {
                     throw new Exception("Todos os campos obrigatórios devem ser preenchidos.");
                 }
 
@@ -82,7 +110,7 @@ public class TelaVaga extends Application {
                 if (sucesso) {
                     AlertaUtil.mostrarSucesso("Vaga cadastrada com sucesso!");
                     tabelaVagas.getItems().setAll(vagaRepository.listarVagas());
-                    limparCampos(campoId, campoTitulo, campoEsporte, campoPosicao, campoInstituicao, comboStatus);
+                    limparCampos(campoId, campoTitulo, campoEsporte, campoPosicao, comboInstituicao, comboStatus);
                 } else {
                     AlertaUtil.mostrarErro("Erro ao cadastrar: ID já existente.");
                 }
@@ -101,10 +129,10 @@ public class TelaVaga extends Application {
                 String tit = campoTitulo.getText();
                 String esp = campoEsporte.getText();
                 String pos = campoPosicao.getText();
-                String inst = campoInstituicao.getText();
+                Instituicao inst = comboInstituicao.getValue();
                 String status = comboStatus.getValue();
 
-                if (tit.isEmpty() || esp.isEmpty() || pos.isEmpty() || inst.isEmpty()) {
+                if (tit.isEmpty() || esp.isEmpty() || pos.isEmpty() || inst == null) {
                     throw new Exception("Todos os campos devem ser preenchidos!");
                 }
 
@@ -136,7 +164,7 @@ public class TelaVaga extends Application {
                 vagaRepository.deletarVaga(selecionado.getId());
                 AlertaUtil.mostrarSucesso("Vaga deletada com sucesso!");
                 tabelaVagas.getItems().setAll(vagaRepository.listarVagas());
-                limparCampos(campoId, campoTitulo, campoEsporte, campoPosicao, campoInstituicao, comboStatus);
+                limparCampos(campoId, campoTitulo, campoEsporte, campoPosicao, comboInstituicao, comboStatus);
             } else {
                 AlertaUtil.mostrarAviso("Selecione uma vaga para deletar.");
             }
@@ -145,7 +173,7 @@ public class TelaVaga extends Application {
         //botão limpar campos
         Button btnLimpar = new Button("Limpar Campos");
         btnLimpar.setOnAction(evento -> {
-            limparCampos(campoId, campoTitulo, campoEsporte, campoPosicao, campoInstituicao, comboStatus);
+            limparCampos(campoId, campoTitulo, campoEsporte, campoPosicao, comboInstituicao, comboStatus);
         });
 
         //configuração das colunas da tabela
@@ -159,7 +187,7 @@ public class TelaVaga extends Application {
         colunaEsporte.setCellValueFactory(new PropertyValueFactory<>("esporte"));
 
         TableColumn<Vaga, String> colunaInstituicao = new TableColumn<>("Instituição");
-        colunaInstituicao.setCellValueFactory(new PropertyValueFactory<>("instituicao"));
+        colunaInstituicao.setCellValueFactory(new PropertyValueFactory<>("nomeInstituicao"));
 
         TableColumn<Vaga, String> colunaStatus = new TableColumn<>("Status");
         colunaStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -175,7 +203,19 @@ public class TelaVaga extends Application {
                 campoTitulo.setText(selecionado.getTitulo());
                 campoEsporte.setText(selecionado.getEsporte());
                 campoPosicao.setText(selecionado.getPosicao());
-                campoInstituicao.setText(selecionado.getInstituicao());
+                
+                // Encontrar e selecionar Instituicao correspondente
+                if (selecionado.getInstituicao() != null) {
+                    for (Instituicao inst : comboInstituicao.getItems()) {
+                        if (inst.getId() == selecionado.getInstituicao().getId()) {
+                            comboInstituicao.setValue(inst);
+                            break;
+                        }
+                    }
+                } else {
+                    comboInstituicao.setValue(null);
+                }
+                
                 comboStatus.setValue(selecionado.getStatus());
             }
         });
@@ -199,7 +239,7 @@ public class TelaVaga extends Application {
         formulario.add(campoPosicao, 1, 3);
 
         formulario.add(new Label("Instituição:"), 0, 4);
-        formulario.add(campoInstituicao, 1, 4);
+        formulario.add(comboInstituicao, 1, 4);
 
         formulario.add(new Label("Status:"), 0, 5);
         formulario.add(comboStatus, 1, 5);
@@ -219,13 +259,13 @@ public class TelaVaga extends Application {
     }
 
     //método que reseta os campos
-    private void limparCampos(TextField campoId, TextField campoTitulo, TextField campoEsporte, TextField campoPosicao, TextField campoInstituicao, ComboBox<String> comboStatus) {
+    private void limparCampos(TextField campoId, TextField campoTitulo, TextField campoEsporte, TextField campoPosicao, ComboBox<Instituicao> comboInstituicao, ComboBox<String> comboStatus) {
         campoId.setEditable(true);
         campoId.clear();
         campoTitulo.clear();
         campoEsporte.clear();
         campoPosicao.clear();
-        campoInstituicao.clear();
+        comboInstituicao.setValue(null);
         comboStatus.setValue("Aberta");
     }
 }
